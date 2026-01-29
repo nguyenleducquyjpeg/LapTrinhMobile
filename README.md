@@ -1,2 +1,0 @@
-# LapTrinhMobile
-2025
