@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   seatText: { fontSize: 10, fontWeight: "bold", color: "#333" },
   availableSeat: { backgroundColor: "#FFF", borderColor: "#DDD" },
   occupiedSeat: { backgroundColor: "#c40c0c", borderColor: "#BBB" },
-  selectedSeat: { backgroundColor: "#000000", borderColor: "#000000" },
+  selectedSeat: { backgroundColor: "#BBB", borderColor: "#BBB" },
   legend: {
     flexDirection: "row",
     justifyContent: "center",

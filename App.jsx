@@ -12,6 +12,8 @@ import AccountInfoScreen from "./screens/AccountInfoScreen";
 import ShowTimeScreen from "./screens/ShowTimesScreen";
 import SeatSelectionScreen from "./screens/SeatSelectionScreen";
 import ProductScreen from "./screens/ProductScreen";
+import PaymentMethodsScreen from "./screens/PaymentMethodsScreen";
+import TicketConfirmationScreen from "./screens/TicketConfirmationScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,8 @@ const App = () => {
           <Stack.Screen name="ShowTimes" component={ShowTimeScreen} options={{ title: 'Lịch chiếu' }} />
           <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} options={{ title: 'Chọn ghế' }} />
           <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ title: 'Sản phẩm' }} />
+          <Stack.Screen name="PaymentMethodsScreen" component={PaymentMethodsScreen} options={{ title: 'Phương thức thanh toán' }} />
+          <Stack.Screen name="TicketConfirmationScreen" component={TicketConfirmationScreen} options={{ title: 'Xác nhận vé' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
