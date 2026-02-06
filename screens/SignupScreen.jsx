@@ -1,150 +1,156 @@
-import React, { useContext, useState } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    Image,
-    StyleSheet,
-    TouchableOpacity,
-} from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
+import React from "react";
+import { View, Text, TextInput, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useForm, Controller } from "react-hook-form"; // Import thêm Controller
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+// 1. Định nghĩa Schema (Giữ nguyên logic của bạn)
+const signupSchema = z.object({
+    fullName: z.string().min(1, "Họ tên không được để trống"),
+    phoneNumber: z.string().regex(/^[0-9]+$/, "Số điện thoại chỉ chứa số").min(10, "Tối thiểu 10 số"),
+    email: z.string().email("Email không hợp lệ"),
+    username: z.string().min(3, "Username tối thiểu 3 ký tự"),
+    password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+    confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Mật khẩu xác nhận không khớp",
+    path: ["confirmPassword"],
+});
 
 const SignUpScreen = ({ navigation }) => {
-    const [fullName, setFullName] = useState("");
-    const [phoneNumber, setPhoneNmber] = useState("");
-    const [error, setError] = useState("");
-    const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-
-    const handleSignUp = async () => {
-        if (password !== confirmPassword) {
-            setError("Passwords do not match");
-            return;
+    // 2. Khởi tạo React Hook Form
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        resolver: zodResolver(signupSchema),
+        defaultValues: {
+            fullName: "", phoneNumber: "", email: "", username: "", password: "", confirmPassword: ""
         }
+    });
 
-        try {
-            await signUp({ fullName, email, phoneNumber, username, password });
-            // Redirect to another screen, for example, Login or Home
-            navigation.navigate("Home"); // Or 'Login'
-        } catch (error) {
-            setError("Failed to sign up. Please try again.");
-        }
+    const onSubmit = (data) => {
+        console.log("Đăng ký thành công:", data);
+        navigation.navigate("Home");
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ flex: 1, justifyContent: "center", paddingBottom: "25%" }}>
-                <Image
-                    source={require("../assets/cgv.png")}
-                    style={{ width: 64, height: 64, marginBottom: 16, alignSelf: "center" }}
-                />
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <Image source={require("../assets/cgv.png")} style={styles.logo} />
                 <Text style={styles.title}>Sign Up</Text>
 
-                {error ? <Text style={styles.error}>{error}</Text> : null}
-
-                <TextInput
-                    placeholder="Full Name"
-                    style={styles.input}
-                    onChangeText={setFullName}
-                    autoCapitalize="none"
+                {/* Ví dụ mẫu cho 1 trường Input dùng Controller */}
+                <Text style={styles.label}>Họ và tên</Text>
+                <Controller
+                    control={control}
+                    name="fullName"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            style={[styles.input, errors.fullName && styles.inputError]}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            placeholder="Nhập họ tên"
+                        />
+                    )}
                 />
+                {errors.fullName && <Text style={styles.errorText}>{errors.fullName.message}</Text>}
 
-                <TextInput
-                    placeholder="Phone Number"
-                    style={styles.input}
-                    onChangeText={setPhoneNmber}
-                    autoCapitalize="none"
+                {/* Số điện thoại */}
+                <Text style={styles.label}>Số điện thoại</Text>
+                <Controller
+                    control={control}
+                    name="phoneNumber"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            style={[styles.input, errors.phoneNumber && styles.inputError]}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            placeholder="Nhập số điện thoại"
+                            keyboardType="numeric"
+                        />
+                    )}
                 />
+                {errors.phoneNumber && <Text style={styles.errorText}>{errors.phoneNumber.message}</Text>}
 
-                <TextInput
-                    placeholder="Email"
-                    style={styles.input}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
+                {/* Email */}
+                <Text style={styles.label}>Email</Text>
+                <Controller
+                    control={control}
+                    name="email"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            style={[styles.input, errors.email && styles.inputError]}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            placeholder="example@gmail.com"
+                        />
+                    )}
                 />
+                {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
 
-                <TextInput
-                    placeholder="Username"
-                    style={styles.input}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
+                {/* Mật khẩu */}
+                <Text style={styles.label}>Mật khẩu</Text>
+                <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            style={[styles.input, errors.password && styles.inputError]}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            placeholder="Tối thiểu 6 ký tự"
+                            secureTextEntry
+                        />
+                    )}
                 />
+                {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
 
-                <TextInput
-                    placeholder="Password"
-                    style={styles.input}
-                    secureTextEntry
-                    onChangeText={setPassword}
-                    autoCapitalize="none"
+                {/* Xác nhận mật khẩu */}
+                <Text style={styles.label}>Xác nhận mật khẩu</Text>
+                <Controller
+                    control={control}
+                    name="confirmPassword"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            style={[styles.input, errors.confirmPassword && styles.inputError]}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            placeholder="Nhập lại mật khẩu"
+                            secureTextEntry
+                        />
+                    )}
                 />
-
-                <TextInput
-                    placeholder="Confirm Password"
-                    style={styles.input}
-                    secureTextEntry
-                    onChangeText={setConfirmPassword}
-                    autoCapitalize="none"
-                />
+                {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>}
 
                 <TouchableOpacity
-                    style={{
-                        backgroundColor: "#B22222",
-                        paddingVertical: 12,
-                        borderRadius: 8,
-                    }}
-                    onPress={handleSignUp}
+                    style={styles.signUpBtn}
+                    onPress={handleSubmit(onSubmit)} // Dùng handleSubmit của thư viện
                 >
-                    <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>Sign Up</Text>
+                    <Text style={styles.signUpBtnText}>ĐĂNG KÝ</Text>
                 </TouchableOpacity>
-
-                <Text style={styles.footerText}>By Signing Up, you agree to our Terms & Privacy Policy</Text>
 
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                    <Text style={styles.link}>Already have an account? Log In</Text>
+                    <Text style={styles.link}>Đã có tài khoản? Đăng nhập</Text>
                 </TouchableOpacity>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 16,
-        flex: 1
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 16,
-        textAlign: "center",
-    },
-    input: {
-        borderBottomWidth: 1,
-        marginBottom: 16,
-        borderBottomColor: "#DFDFDF",
-        paddingBottom: 8,
-    },
-    footerText: {
-        fontSize: 12,
-        color: "gray",
-        textAlign: "center",
-        marginTop: 16,
-    },
-    link: {
-        fontStyle: 14,
-        fontWeight: "bold",
-        color: "#B71C1C",
-        textAlign: "center",
-        marginTop: 8,
-    },
-    error: {
-        color: "red",
-        fontSize: 14,
-        textAlign: "center",
-        marginBottom: 10,
-    }
+    container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+    logo: { width: 64, height: 64, alignSelf: "center", marginBottom: 10 },
+    title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
+    input: { borderBottomWidth: 1, borderBottomColor: "#ccc", paddingVertical: 8, marginBottom: 5 },
+    inputError: { borderBottomColor: "red" },
+    errorText: { color: "red", fontSize: 12, marginBottom: 10 },
+    signUpBtn: { backgroundColor: "#B22222", padding: 15, borderRadius: 8, marginTop: 20 },
+    signUpBtnText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
+    link: { color: "#B71C1C", textAlign: "center", marginTop: 20, fontWeight: "bold" }
 });
 
 export default SignUpScreen;

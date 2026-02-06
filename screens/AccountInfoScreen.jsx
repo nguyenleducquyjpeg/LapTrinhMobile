@@ -128,10 +128,7 @@ const AccountInfoScreen = () => {
           <View style={styles.logoutSection}>
             <TouchableOpacity
               style={styles.customLogoutButton}
-              onPress={() => {
-                // Thêm logic đăng xuất ở đây
-                Alert.alert("Thông báo", "Bạn đã đăng xuất thành công!");
-              }}
+              onPress={() => navigation.navigate("Login")} // Thêm dòng này để chuyển về trang Login
             >
               <Text style={styles.customLogoutText}>ĐĂNG XUẤT</Text>
             </TouchableOpacity>
