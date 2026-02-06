@@ -14,6 +14,7 @@ import SeatSelectionScreen from "./screens/SeatSelectionScreen";
 import ProductScreen from "./screens/ProductScreen";
 import PaymentMethodsScreen from "./screens/PaymentMethodsScreen";
 import TicketConfirmationScreen from "./screens/TicketConfirmationScreen";
+import TicketSuccessScreen from "./screens/TicketSuccessScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,15 +26,16 @@ const App = () => {
         <StatusBar barStyle="dark-content" />
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Trang chủ' }} />
-          <Stack.Screen name="MovieInfo" component={MovieInfoScreen} options={{ title: 'Thông tin phim' }} />
+          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="MovieInfo" component={MovieInfoScreen} options={{ headerShown: false }} />
           <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: 'Đăng ký' }} />
-          <Stack.Screen name="AccountInfo" component={AccountInfoScreen} options={{ title: 'Thông tin tài khoản' }} />
-          <Stack.Screen name="ShowTimes" component={ShowTimeScreen} options={{ title: 'Lịch chiếu' }} />
-          <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} options={{ title: 'Chọn ghế' }} />
-          <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ title: 'Sản phẩm' }} />
-          <Stack.Screen name="PaymentMethodsScreen" component={PaymentMethodsScreen} options={{ title: 'Phương thức thanh toán' }} />
-          <Stack.Screen name="TicketConfirmationScreen" component={TicketConfirmationScreen} options={{ title: 'Xác nhận vé' }} />
+          <Stack.Screen name="AccountInfo" component={AccountInfoScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ShowTimes" component={ShowTimeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="PaymentMethodsScreen" component={PaymentMethodsScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TicketConfirmationScreen" component={TicketConfirmationScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TicketSuccessScreen" component={TicketSuccessScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

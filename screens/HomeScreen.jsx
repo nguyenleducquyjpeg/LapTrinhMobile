@@ -17,7 +17,7 @@ const HomeScreen = ({ navigation }) => {
     { type: 'MOVIE', title: "Phim nổi bật", data: MOCK_MOVIES.slice(0, 3) },
     { type: 'MOVIE', title: "Phim đang chiếu", data: MOCK_MOVIES.slice(1) },
     { type: 'OTHER', title: "Tin nóng", data: PROMOTIONS },
-    { type: 'OTHER', title: "eGift", data: EGIFTS },
+    { type: 'OTHER', title: "CGV eGift", data: EGIFTS },
     { type: 'OTHER', title: "Videos", data: VIDEOS },
   ];
 
@@ -68,49 +68,90 @@ const HomeScreen = ({ navigation }) => {
     </View>
   );
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-      <FlatList
-        data={sections}
-        keyExtractor={(item) => item.title}
-        ListHeaderComponent={
-          <View>
-            {renderBannerSlider()}
-            {renderCategoryGrid()}
-          </View>
-        }
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 20 }}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>{item.title}</Text>
-              <TouchableOpacity>
-                <Text style={styles.seeAllText}>TẤT CẢ</Text>
-              </TouchableOpacity>
-            </View>
+  // --- FOOTER NAVIGATION ---
+  const renderFooterTab = () => (
+    <View style={styles.footerContainer}>
+      {/* Trang chủ */}
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("Home")}>
+        <Ionicons name="home" size={24} color="#b80000" />
+        <Text style={[styles.tabText, { color: '#b80000' }]}>Trang chủ</Text>
+      </TouchableOpacity>
 
-            <FlatList
-              data={item.data}
-              renderItem={({ item: subItem }) => {
-                if (item.type === 'MOVIE') {
-                  return (
-                    <TouchableOpacity onPress={() => navigation.navigate("MovieInfo", { movie: subItem })}>
-                      <MovieCard movie={subItem} />
-                    </TouchableOpacity>
-                  );
-                } else {
-                  return renderOtherItem(subItem);
-                }
-              }}
-              keyExtractor={(subItem) => subItem.id || subItem._id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingLeft: 16 }}
-            />
-          </View>
-        )}
-      />
-    </SafeAreaView>
+      {/* Voucher */}
+      <TouchableOpacity style={styles.tabItem} onPress={() => console.log("Voucher")}>
+        <Ionicons name="ticket-outline" size={24} color="#666" />
+        <Text style={styles.tabText}>Voucher</Text>
+      </TouchableOpacity>
+
+      {/* ChatAI (Center Button) */}
+      <TouchableOpacity style={styles.chatAiButton} onPress={() => console.log("Chat AI")}>
+        <View style={styles.chatAiCircle}>
+          <Ionicons name="chatbubbles" size={30} color="#fff" />
+        </View>
+        <Text style={[styles.tabText, { marginTop: 28 }]}>ChatAI</Text>
+      </TouchableOpacity>
+
+      {/* Khuyến mãi */}
+      <TouchableOpacity style={styles.tabItem} onPress={() => console.log("Khuyến mãi")}>
+        <Ionicons name="gift-outline" size={24} color="#666" />
+        <Text style={styles.tabText}>Khuyến mãi</Text>
+      </TouchableOpacity>
+
+      {/* Cá nhân */}
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("AccountInfo")}>
+        <Ionicons name="person-outline" size={24} color="#666" />
+        <Text style={styles.tabText}>Cá nhân</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <FlatList
+          data={sections}
+          keyExtractor={(item) => item.title}
+          ListHeaderComponent={
+            <View>
+              <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+              {renderBannerSlider()}
+              {renderCategoryGrid()}
+            </View>
+          }
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 20 }}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>{item.title}</Text>
+                <TouchableOpacity><Text style={styles.seeAllText}>TẤT CẢ</Text></TouchableOpacity>
+              </View>
+
+              <FlatList
+                data={item.data}
+                renderItem={({ item: subItem }) => {
+                  if (item.type === 'MOVIE') {
+                    return (
+                      <TouchableOpacity onPress={() => navigation.navigate("MovieInfo", { movie: subItem })}>
+                        <MovieCard movie={subItem} />
+                      </TouchableOpacity>
+                    );
+                  } else {
+                    return renderOtherItem(subItem);
+                  }
+                }}
+                keyExtractor={(subItem) => subItem.id || subItem._id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingLeft: 16 }}
+              />
+            </View>
+          )}
+          contentContainerStyle={{ paddingBottom: 100 }} // Đệm để không bị footer che
+        />
+      </SafeAreaView>
+
+      {/* Hiển thị Footer */}
+      {renderFooterTab()}
+    </View>
   );
 };
 
@@ -126,68 +167,45 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   bannerImage: { width: "100%", aspectRatio: 16 / 9, borderRadius: 15, resizeMode: "contain" },
-
-  // Styles Category Grid
   categoryContainer: { marginBottom: 10 },
-  gridWrapper: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 10,
-    justifyContent: 'flex-start',
-  },
-  categoryItem: {
-    width: (width - 20) / 4, // Chia 4 cột đều nhau
-    alignItems: 'center',
-    marginBottom: 15,
-  },
+  gridWrapper: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 10, justifyContent: 'flex-start' },
+  categoryItem: { width: (width - 20) / 4, alignItems: 'center', marginBottom: 15 },
   iconCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingRight: 16,
-  },
-  seeAllText: {
-    color: '#b80000',
-    fontSize: 12,
-    fontWeight: 'bold',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-  },
-  otherItemWrapper: {
-    width: width * 0.42,
-    marginRight: 12,
-  },
-  otherImage: {
-    width: '100%',
-    height: 110,
-    borderRadius: 8,
-    backgroundColor: '#ddd',
-  },
-  otherItemTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginTop: 8,
-    color: '#333',
+    width: 50, height: 50, borderRadius: 25, backgroundColor: '#fff',
+    justifyContent: 'center', alignItems: 'center', elevation: 3,
+    shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4,
   },
   categoryName: { fontSize: 12, color: '#333', marginTop: 5, textAlign: 'center' },
-
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 16 },
   sectionTitle: { fontSize: 18, fontWeight: "bold", marginVertical: 10, marginLeft: 16 },
+  seeAllText: { color: '#b80000', fontSize: 11, fontWeight: 'bold', borderWidth: 1, borderColor: '#ddd', paddingHorizontal: 8, borderRadius: 10 },
+  otherItemWrapper: { width: width * 0.42, marginRight: 12 },
+  otherImage: { width: '100%', height: 110, borderRadius: 8, backgroundColor: '#ddd' },
+  otherItemTitle: { fontSize: 13, fontWeight: 'bold', marginTop: 8, color: '#333' },
+
+  // --- STYLES CHO FOOTER ---
+  footerContainer: {
+    flexDirection: 'row',
+    height: 70,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingBottom: 5,
+  },
+  tabItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  tabText: { fontSize: 10, color: '#666', marginTop: 4 },
+  chatAiButton: { flex: 1, alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  chatAiCircle: {
+    width: 55, height: 55, borderRadius: 28, backgroundColor: '#b80000',
+    justifyContent: 'center', alignItems: 'center', elevation: 5,
+    shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5,
+    position: 'absolute', top: -30, // Đẩy nút lên cao
+  }
 });
 
 export default HomeScreen;

@@ -15,22 +15,54 @@ export const MOCK_MOVIES = [
     {
         _id: '1',
         movie_name: 'Avengers: Endgame',
-        movie_poster: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVzSydttTnt8buwcJVnGmoSR4zyTvsb2RkUr8GJNnCozMAOco0K8_VNKM7KsStH27NGms_1g6qC0FeuY3hPuNhhw1rlB3noZZ-_8kdFpv2Lg&s=10'
+        movie_poster: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVzSydttTnt8buwcJVnGmoSR4zyTvsb2RkUr8GJNnCozMAOco0K8_VNKM7KsStH27NGms_1g6qC0FeuY3hPuNhhw1rlB3noZZ-_8kdFpv2Lg&s=10',
+        trailer_id: 'TcMBFSGVi1c',
+        genre: 'Hành động, Viễn tưởng',
+        duration: 181,
+        release_date: '26/04/2019',
+        description: 'Sau những sự kiện thảm khốc trong Infinity War, vũ trụ đang bị tàn phá. Với sự giúp đỡ của các đồng minh còn lại, Avengers tập hợp một lần nữa để đảo ngược hành động của Thanos.',
+        rating: 9.5,
+        reviews: [
+            { id: '1', user_name: 'Minh Quân', rating: 5, comment: 'Phim quá tuyệt vời, kết thúc mãn nhãn cho một hành trình!', date: '20/10/2025' },
+            { id: '2', user_name: 'Thu Hà', rating: 4, comment: 'Hơi dài nhưng rất cảm động.', date: '21/10/2025' },
+            { id: '3', user_name: 'Văn Hùng', rating: 5, comment: 'Diễn xuất và hiệu ứng xuất sắc!', date: '22/10/2025' }
+        ]
     },
     {
         _id: '2',
         movie_name: 'Inception',
-        movie_poster: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTERbuETPv9nKXXcFJVQaKcEKyXiXsyW2eq_Oj8lNVqoXXHLCNcltcOrZ22q4utNzuALSaQ5d59hl83JOEMNY7tubyT5QaxgXdOTe-91ooU&s=10'
+        movie_poster: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTERbuETPv9nKXXcFJVQaKcEKyXiXsyW2eq_Oj8lNVqoXXHLCNcltcOrZ22q4utNzuALSaQ5d59hl83JOEMNY7tubyT5QaxgXdOTe-91ooU&s=10',
+        genre: 'Hành động, Khoa học viễn tưởng',
+        duration: 148,
+        description: 'Dom Cobb là một kẻ trộm chuyên nghiệp, người có khả năng xâm nhập vào giấc mơ để đánh cắp bí mật kinh doanh. Anh được giao nhiệm vụ gieo rắc một ý tưởng vào tâm trí đối tượng.',
+        rating: 8.8,
+        reviews: [
+            { id: '1', user_name: 'Hoàng Long', rating: 5, comment: 'Hại não nhưng cực kỳ lôi cuốn. Đỉnh cao của Nolan.', date: '15/09/2025' }
+        ]
     },
     {
         _id: '3',
         movie_name: 'The Dark Knight',
-        movie_poster: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3ekE6Hhz9gvIbiFSUPxt-FyAh4zXTXX0bjQ&s'
+        movie_poster: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3ekE6Hhz9gvIbiFSUPxt-FyAh4zXTXX0bjQ&s',
+        genre: 'Tội phạm, Kịch tính',
+        duration: 152,
+        description: 'Khi mối đe dọa được gọi là Joker gây ra sự hỗn loạn tại Gotham, Người Dơi phải chấp nhận một trong những bài kiểm tra tâm lý lớn nhất để chống lại sự bất công.',
+        rating: 9.0,
+        reviews: [
+            { id: '1', user_name: 'Đức Anh', rating: 5, comment: 'Joker là phản diện hay nhất mọi thời đại!', date: '01/11/2025' }
+        ]
     },
     {
         _id: '4',
         movie_name: 'Interstellar',
-        movie_poster: 'https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg'
+        movie_poster: 'https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
+        genre: 'Phiêu lưu, Khoa học viễn tưởng',
+        duration: 169,
+        description: 'Một nhóm thám hiểm du hành qua một lỗ sâu mới được khám phá trong không gian nhằm nỗ lực đảm bảo sự sống còn của nhân loại khi Trái Đất đang dần lụi tàn.',
+        rating: 8.6,
+        reviews: [
+            { id: '1', user_name: 'Phương Linh', rating: 5, comment: 'Nhạc phim và hình ảnh quá đỉnh. Xem mà rợn người.', date: '12/11/2025' }
+        ]
     },
 ];
 

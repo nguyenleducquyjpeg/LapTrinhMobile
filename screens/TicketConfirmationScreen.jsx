@@ -20,14 +20,31 @@ const TicketConfirmationScreen = ({ route, navigation }) => {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Thông tin phim */}
+        {/* Thông tin phim với Poster */}
         <View style={styles.section}>
-          <Text style={styles.movieName}>{movie?.movie_name}</Text>
-          <Text style={styles.detailText}>{theater?.theater_name}</Text>
-          <Text style={styles.detailText}>
-            {screening?.screening_time ? new Date(screening.screening_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
-            {" - "}
-            {screening?.screening_time ? new Date(screening.screening_time).toLocaleDateString('vi-VN') : ""}
-          </Text>
+          <View style={styles.movieInfoRow}>
+            {/* Poster phim */}
+            <Image
+              source={{ uri: movie?.movie_poster }}
+              style={styles.confirmationPoster}
+              resizeMode="cover"
+            />
+
+            {/* Chi tiết văn bản */}
+            <View style={styles.movieTextDetails}>
+              <Text style={styles.movieName} numberOfLines={2}>{movie?.movie_name}</Text>
+              <Text style={styles.detailText}>{theater?.theater_name}</Text>
+              <Text style={styles.detailText}>
+                <Ionicons name="time-outline" size={14} color="#666" />{" "}
+                {screening?.screening_time ? new Date(screening.screening_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                {" - "}
+                {screening?.screening_time ? new Date(screening.screening_time).toLocaleDateString('vi-VN') : ""}
+              </Text>
+              <Text style={styles.detailText}>
+                <Ionicons name="location-outline" size={14} color="#666" /> Suất chiếu: 2D Phụ đề
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Ghế đã chọn */}
@@ -50,6 +67,32 @@ const TicketConfirmationScreen = ({ route, navigation }) => {
             ))}
           </View>
         )}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>GIẢM GIÁ / ƯU ĐÃI</Text>
+
+          <TouchableOpacity style={styles.promoRow}>
+            <View style={styles.promoLeft}>
+              <Ionicons name="ticket-outline" size={24} color="#e71a0f" />
+              <Text style={styles.promoLabel}>Voucher / eGift</Text>
+            </View>
+            <View style={styles.promoRight}>
+              <Text style={styles.promoPlaceholder}>Chọn voucher</Text>
+              <Ionicons name="chevron-forward" size={20} color="#999" />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.promoRow}>
+            <View style={styles.promoLeft}>
+              <Ionicons name="gift-outline" size={24} color="#e71a0f" />
+              <Text style={styles.promoLabel}>Mã giảm giá (Promo code)</Text>
+            </View>
+            <View style={styles.promoRight}>
+              <Text style={styles.promoPlaceholder}>Nhập mã</Text>
+              <Ionicons name="chevron-forward" size={20} color="#999" />
+            </View>
+          </TouchableOpacity>
+        </View>
 
         {/* Tổng tiền */}
         <View style={[styles.section, styles.totalSection]}>
@@ -97,8 +140,35 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     elevation: 2,
   },
-  movieName: { fontSize: 20, fontWeight: "bold", color: "#e71a0f", marginBottom: 5 },
-  detailText: { fontSize: 14, color: "#666", marginBottom: 3 },
+  movieInfoRow: {
+    flexDirection: "row", // Chia 2 cột ngang
+    alignItems: "flex-start",
+  },
+  confirmationPoster: {
+    width: 80,
+    height: 120,
+    borderRadius: 4,
+    backgroundColor: "#eee",
+  },
+  movieTextDetails: {
+    flex: 1,
+    marginLeft: 15,
+    justifyContent: "flex-start",
+  },
+  movieName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000000",
+    marginBottom: 8,
+    lineHeight: 22,
+  },
+  detailText: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 5,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   sectionTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 10, borderBottomWidth: 1, borderBottomColor: "#eee", paddingBottom: 5 },
   rowBetween: { flexDirection: "row", justifyContent: "space-between", marginVertical: 5 },
   label: { fontSize: 15, color: "#555" },
@@ -114,6 +184,32 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+  },
+  promoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#eee",
+  },
+  promoLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  promoLabel: {
+    fontSize: 15,
+    marginLeft: 10,
+    color: "#333",
+  },
+  promoRight: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  promoPlaceholder: {
+    fontSize: 14,
+    color: "#999",
+    marginRight: 5,
   },
   confirmButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });

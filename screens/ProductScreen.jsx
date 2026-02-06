@@ -19,7 +19,7 @@ const items = [
     name: "SNOOPY SPORT 2025 SINGLE",
     price: 249000,
     description: "01 Ly nước Snoopy Sport 2025 (không kèm nước)\n01 Coca-cola 32oz\n01 Bắp ngọt lớn 44oz ...",
-    image: "https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/572332606_1317460380420729_1483077768025352857_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeEBdAYb8Jj4cEH1rTbmnqBBfgsB8ANqVhF-CwHwA2pWEZDAEx6UXVb31eMD2EJ_9SDjUWk2BKKB1qX0b2yaCRK3&_nc_ohc=ndaU6EjO-74Q7kNvwEEcSOl&_nc_oc=AdmF4sMBjkIgD4ZF38QFtRutidO87ItCmqODtXU98zvYHqyOOvtMkv6vfVa8MklrmYSUVYagMu14OXfUakrAe_NM&_nc_zt=23&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=EPDUTtOPMI8uxF3SEyQtZQ&oh=00_Afp54rijAyet_KjkTIBGx88dxdKEo7JxTpGMYddjhrMzQg&oe=69800FC4",
+    image: "https://iguov8nhvyobj.vcdn.cloud/media/wysiwyg/2025/102025/2025_Snoopy_N_O_350x495.png",
   },
   {
     id: "2",
