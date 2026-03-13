@@ -10,20 +10,17 @@
     "test": "jest"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native/new-app-screen": "0.83.1",
     "@react-navigation/native": "^7.1.27",
     "@react-navigation/native-stack": "^7.9.1",
     "react": "19.2.0",
-    "react-hook-form": "^7.71.1",
     "react-native": "0.83.1",
     "react-native-qrcode-svg": "^6.3.21",
     "react-native-safe-area-context": "^5.6.2",
     "react-native-screens": "^4.19.0",
     "react-native-svg": "^15.15.2",
-    "react-native-vector-icons": "^10.3.0",
-    "zod": "^4.3.6"
+    "react-native-vector-icons": "^10.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -36,6 +33,7 @@
     "@react-native-community/cli-platform-ios": "20.0.0",
     "@react-native/babel-preset": "^0.83.1",
     "@react-native/eslint-config": "0.83.1",
+    "@react-native/gradle-plugin": "^0.83.1",
     "@react-native/metro-config": "0.83.1",
     "@react-native/typescript-config": "0.83.1",
     "@types/jest": "^29.5.13",

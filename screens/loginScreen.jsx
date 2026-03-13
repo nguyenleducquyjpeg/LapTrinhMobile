@@ -57,9 +57,9 @@ const styles = StyleSheet.create({
         flex: 1
     },
     Image: {
-        width: 64,
-        height: 64,
-        marginBottom: 16,
+        width: 120,
+        height: 120,
+        marginBottom: 10,
         alignSelf: 'center'
     },
     title: {
