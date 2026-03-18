@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "109277518287",
+    "project_id": "movieapp-a45bd",
+    "storage_bucket": "movieapp-a45bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109277518287:android:1a75cabfa9518dc8739aba",
+        "android_client_info": {
+          "package_name": "com.shopai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFdYVfXzS1aBF8Q1lEpg4tpy1mx-nhdHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

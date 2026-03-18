@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     TextInput,
@@ -6,15 +6,50 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
-} from "react-native"
+    Alert,
+    ActivityIndicator
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+// 1. Import Firebase Auth
+import auth from '@react-native-firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
-    // Không dùng useContext(AuthContext)
-    const handleLogin = () => {
-        // Nhấn là chuyển trang, không cần kiểm tra điều kiện
-        navigation.navigate("Home");
+    // 2. Khai báo State để lưu thông tin nhập liệu
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    // 3. Hàm xử lý đăng nhập thực tế
+    const handleLogin = async () => {
+        // Kiểm tra đầu vào cơ bản
+        if (!email.trim() || !password) {
+            Alert.alert("Thông báo", "Vui lòng nhập đầy đủ Email và Mật khẩu.");
+            return;
+        }
+
+        setLoading(true); // Hiện icon load
+
+        try {
+            // Gọi hàm đăng nhập của Firebase
+            await auth().signInWithEmailAndPassword(email.trim(), password);
+
+            setLoading(false);
+            console.log("Đăng nhập thành công!");
+            navigation.navigate("Home"); // Chuyển vào trang chủ
+        } catch (error) {
+            setLoading(false);
+
+            // Xử lý các mã lỗi phổ biến
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                Alert.alert("Thất bại", "Email hoặc mật khẩu không chính xác.");
+            } else if (error.code === 'auth/invalid-email') {
+                Alert.alert("Lỗi", "Định dạng email không hợp lệ.");
+            } else {
+                Alert.alert("Lỗi", "Có lỗi xảy ra: " + error.message);
+            }
+        }
     };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.View}>
@@ -22,24 +57,42 @@ const LoginScreen = ({ navigation }) => {
                     source={require("../assets/cgv.png")}
                     style={styles.Image}
                 />
-                <Text style={[styles.title, { textAlign: 'center' }]}>Login</Text>
+                <Text style={[styles.title, { textAlign: 'center' }]}>ĐĂNG NHẬP</Text>
 
-                <TextInput placeholder="Username" style={styles.input} />
-                <TextInput placeholder="Password" style={styles.input} secureTextEntry />
+                <TextInput
+                    placeholder="Email"
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    placeholder="Mật khẩu"
+                    style={styles.input}
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                />
 
                 <TouchableOpacity
-                    style={styles.loginButton}
+                    style={[styles.loginButton, loading && { backgroundColor: '#ccc' }]}
                     onPress={handleLogin}
+                    disabled={loading}
                 >
-                    <Text style={styles.buttonText}>Login</Text>
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <Text style={styles.buttonText}>ĐĂNG NHẬP</Text>
+                    )}
                 </TouchableOpacity>
 
                 <Text style={styles.footerText}>
-                    By logging in, you agree to our Terms of Service and Privacy Policy.
+                    Bằng việc đăng nhập, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.
                 </Text>
 
                 <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-                    <Text style={styles.link}>Sign Up</Text>
+                    <Text style={styles.link}>Chưa có tài khoản? Đăng ký ngay</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
