@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, FlatList, View, TouchableOpacity, Dimensions, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Alert, StyleSheet, Text, FlatList, View, TouchableOpacity, Dimensions, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/Header";
 import MovieCard from "../components/MovieCard";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import firestore from '@react-native-firebase/firestore';
 
 import { BANNERS, MOCK_MOVIES, CATEGORIES, PROMOTIONS, EGIFTS, VIDEOS } from "../data/mock_data";
 
@@ -11,15 +12,77 @@ const { width } = Dimensions.get('window'); // Lấy chiều rộng màn hình
 
 const HomeScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [movies, setMovies] = useState([]);
+
+  const filteredMovies = selectedCategory
+    ? movies.filter(movie =>
+      movie.category.toLowerCase().includes(selectedCategory.toLowerCase())
+    )
+    : movies;
 
   // Thêm các section mới vào mảng sections
   const sections = [
-    { type: 'MOVIE', title: "Phim nổi bật", data: MOCK_MOVIES.slice(0, 3) },
-    { type: 'MOVIE', title: "Phim đang chiếu", data: MOCK_MOVIES.slice(1) },
+    { type: 'MOVIE', title: "Phim nổi bật", data: filteredMovies.slice(0, 3) },
+    { type: 'MOVIE', title: "Phim đang chiếu", data: filteredMovies.slice(1) },
     { type: 'OTHER', title: "Tin nóng", data: PROMOTIONS },
     { type: 'OTHER', title: "CGV eGift", data: EGIFTS },
     { type: 'OTHER', title: "Videos", data: VIDEOS },
   ];
+
+  const uploadMoviesToFirestore = async () => {
+    try {
+      const batch = firestore().batch();
+      MOCK_MOVIES.forEach((movie) => {
+        // 1. Sử dụng _id từ mock_data làm ID của document
+        const docRef = firestore().collection('movies').doc(String(movie._id));
+        // 2. Ánh xạ đúng tên thuộc tính từ file mock_data.js
+        batch.set(docRef, {
+          title: movie.movie_name,
+          image: movie.movie_poster,
+          category: movie.genre,
+          rating: movie.rating,
+          description: movie.description || "Mô tả đang cập nhật",
+          duration: movie.duration || "120 min",
+          reviews: [],
+          updatedAt: firestore.FieldValue.serverTimestamp(),
+        });
+      });
+
+      await batch.commit();
+      Alert.alert("Thành công", "Dữ liệu phim từ mock_data đã lên Firestore!");
+    } catch (error) {
+      console.error("Lỗi chi tiết:", error);
+      Alert.alert("Lỗi", "Kiểm tra lại quyền ghi (Rules) hoặc trạng thái đăng nhập!");
+    }
+  };
+
+  useEffect(() => {
+    //uploadMoviesToFirestore(); // Mở comment dòng này, Save để chạy, sau đó đóng lại ngay!
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = firestore()
+      .collection("movies")
+      .onSnapshot(snapshot => {
+        const movieList = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title,
+            image: data.image,
+            category: data.category,
+            rating: data.rating,
+            description: data.description,
+            duration: data.duration,
+          };
+        });
+        console.log("DATA FIRESTORE:", movieList);
+        setMovies(movieList);
+      });
+
+    return () => unsubscribe();
+  }, []);
 
   // Hàm render chung cho các mục không phải phim (Ưu đãi, eGift, Video)
   const renderOtherItem = (item) => (
@@ -34,7 +97,6 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={BANNERS}
         horizontal
-        // pagingEnabled={true} -> Bỏ dòng này
         snapToInterval={width * 0.85 + 20} // Chiều rộng ảnh + khoảng cách margin
         decelerationRate="fast"
         showsHorizontalScrollIndicator={false}
@@ -57,7 +119,20 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Thể loại</Text>
       <View style={styles.gridWrapper}>
         {CATEGORIES.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.categoryItem}>
+          <TouchableOpacity
+            key={item.id}
+            style={[
+              styles.categoryItem,
+              selectedCategory === item.name && { backgroundColor: "#ffe0e0" }
+            ]}
+            onPress={() => {
+              if (item.name === "Tất cả") {
+                setSelectedCategory(null);
+              } else {
+                setSelectedCategory(item.name);
+              }
+            }}
+          >
             <View style={styles.iconCircle}>
               <Ionicons name={item.icon} size={24} color="#e71a0f" />
             </View>
@@ -84,7 +159,10 @@ const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       {/* ChatAI (Center Button) */}
-      <TouchableOpacity style={styles.chatAiButton} onPress={() => console.log("Chat AI")}>
+      <TouchableOpacity
+        style={styles.chatAiButton}
+        onPress={() => navigation.navigate("ChatAi")}
+      >
         <View style={styles.chatAiCircle}>
           <Ionicons name="chatbubbles" size={30} color="#fff" />
         </View>
@@ -145,7 +223,7 @@ const HomeScreen = ({ navigation }) => {
               />
             </View>
           )}
-          contentContainerStyle={{ paddingBottom: 100 }} // Đệm để không bị footer che
+          contentContainerStyle={{ paddingBottom: 100 }}
         />
       </SafeAreaView>
 

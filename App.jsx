@@ -15,6 +15,8 @@ import ProductScreen from "./screens/ProductScreen";
 import PaymentMethodsScreen from "./screens/PaymentMethodsScreen";
 import TicketConfirmationScreen from "./screens/TicketConfirmationScreen";
 import TicketSuccessScreen from "./screens/TicketSuccessScreen";
+import ChatAiScreen from "./screens/ChatAiScreen";
+import WriteReviewScreen from "./screens/ReviewScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +28,7 @@ const App = () => {
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ChatAi" component={ChatAiScreen} options={{ headerShown: false }} />
           <Stack.Screen name="MovieInfo" component={MovieInfoScreen} options={{ headerShown: false }} />
           <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: "Đăng ký" }} />
           <Stack.Screen name="AccountInfo" component={AccountInfoScreen} options={{ headerShown: false }} />
@@ -35,6 +38,7 @@ const App = () => {
           <Stack.Screen name="PaymentMethodsScreen" component={PaymentMethodsScreen} options={{ headerShown: false }} />
           <Stack.Screen name="TicketConfirmationScreen" component={TicketConfirmationScreen} options={{ headerShown: false }} />
           <Stack.Screen name="TicketSuccessScreen" component={TicketSuccessScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
+import firestore from '@react-native-firebase/firestore';
+
 
 const MovieCard = ({ movie }) => {
   // Hàm định dạng số an toàn
@@ -16,33 +18,29 @@ const MovieCard = ({ movie }) => {
 
   return (
     <View style={styles.card}>
-      {/* Thêm ảnh mặc định nếu movie_poster trống */}
       <Image
-        source={{ uri: movie.movie_poster || 'https://via.placeholder.com/150' }}
+        source={{ uri: movie.image || 'https://via.placeholder.com/150' }}
         style={styles.poster}
       />
 
       <View style={styles.infoContainer}>
         <View style={styles.ratingContainer}>
-          {/* Sử dụng Emoji thay cho FontAwesome để tránh lỗi thư viện Expo */}
           <Text style={{ fontSize: 14 }}>⭐</Text>
-
-          {/* Sử dụng ?. để tránh lỗi crash khi dữ liệu MOCK_MOVIES thiếu trường rating */}
           <Text style={styles.ratingText}>
-            {movie.rating?.avg_rating?.$numberDecimal || "0"}/10
+            {movie.rating || 0}/10
           </Text>
 
           <Text style={styles.ratingSubText}>
-            ({formatNumber(movie.rating?.number_of_rating || 0)} Ratings)
+            (0 Ratings)
           </Text>
         </View>
 
         <Text style={styles.movieTitle} numberOfLines={1}>
-          {movie.movie_name || "Chưa có tên"}
+          {movie.title || "Chưa có tên"}
         </Text>
 
         <Text style={styles.genre} numberOfLines={1}>
-          {movie.genre || "N/A"}
+          {movie.category || "N/A"}
         </Text>
       </View>
     </View>
@@ -56,7 +54,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
     marginBottom: 10,
-    elevation: 3, // Thêm bóng đổ cho Android
+    elevation: 3,
   },
   poster: {
     width: "100%",

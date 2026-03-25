@@ -10,7 +10,6 @@ import {
     ActivityIndicator
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-// 1. Import Firebase Auth
 import auth from '@react-native-firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
@@ -35,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
 
             setLoading(false);
             console.log("Đăng nhập thành công!");
-            navigation.navigate("Home"); // Chuyển vào trang chủ
+            navigation.navigate("Home");
         } catch (error) {
             setLoading(false);
 
@@ -57,7 +56,7 @@ const LoginScreen = ({ navigation }) => {
                     source={require("../assets/cgv.png")}
                     style={styles.Image}
                 />
-                <Text style={[styles.title, { textAlign: 'center' }]}>ĐĂNG NHẬP</Text>
+                <Text style={[styles.title, { textAlign: 'center' }]}>LOGIN</Text>
 
                 <TextInput
                     placeholder="Email"
@@ -118,7 +117,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 16
+        marginBottom: 15
     },
     input: {
         borderBottomWidth: 1,

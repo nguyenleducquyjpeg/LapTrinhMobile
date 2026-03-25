@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,29 +11,62 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Linking } from 'react-native';
-
-// Import dữ liệu từ mock_data
-import { MOCK_MOVIES } from "../data/mock_data";
+import firestore from '@react-native-firebase/firestore';
 
 const { width } = Dimensions.get('window');
 
 const MovieInfoScreen = ({ route, navigation }) => {
   // Nhận dữ liệu phim cơ bản từ trang trước truyền sang
   const { movie } = route.params || {};
-
-  // Tìm dữ liệu chi tiết trong mock_data dựa trên _id để lấy đầy đủ reviews, description...
-  const selectedMovie = MOCK_MOVIES.find(m => m._id === movie?._id) || movie;
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
   const openTrailer = () => {
-    if (selectedMovie.trailer_id) {
-      const url = `https://www.youtube.com/watch?v=${selectedMovie.trailer_id}`;
-      Linking.openURL(url);
-    }
+    if (!selectedMovie?.trailer_id) return;
+
+    const url = `https://www.youtube.com/watch?v=${selectedMovie.trailer_id}`;
+    Linking.openURL(url);
   };
 
   const handleBooking = () => {
     navigation.navigate("ShowTimes", { movie: selectedMovie });
   };
+
+  useEffect(() => {
+    const fetchMovie = async () => {
+      try {
+        const doc = await firestore()
+          .collection("movies")
+          .doc(movie.id)
+          .get();
+        if (doc.exists) {
+          const data = doc.data();
+          setSelectedMovie({
+            id: doc.id,
+            title: data.title,
+            image: data.image,
+            category: data.category,
+            rating: data.rating,
+            description: data.description,
+            duration: data.duration,
+            reviews: data.reviews || [],
+            trailer_id: data.trailer_id,
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi fetch movie:", error);
+      }
+    };
+
+    fetchMovie();
+  }, [movie]);
+
+  if (!selectedMovie) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   // --- FOOTER ĐIỀU HƯỚNG ĐỒNG BỘ ---
   const renderFooterTab = () => (
@@ -82,17 +115,17 @@ const MovieInfoScreen = ({ route, navigation }) => {
             <View style={styles.posterWrapper}>
               <Image
                 style={styles.mainPoster}
-                source={{ uri: selectedMovie?.movie_poster }}
+                source={{ uri: selectedMovie?.image }}
               />
             </View>
 
             {/* Cột phải: Thông tin chữ */}
             <View style={styles.mainDetails}>
-              <Text style={styles.movieTitleText}>{selectedMovie?.movie_name}</Text>
+              <Text style={styles.movieTitleText}>{selectedMovie?.title}</Text>
 
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Thể loại: </Text>
-                <Text style={styles.infoValue}>{selectedMovie?.genre || 'N/A'}</Text>
+                <Text style={styles.infoValue}>{selectedMovie?.category || 'N/A'}</Text>
               </View>
 
               <View style={styles.infoRow}>
@@ -151,6 +184,14 @@ const MovieInfoScreen = ({ route, navigation }) => {
           </View>
         </ScrollView>
 
+        <TouchableOpacity
+          style={styles.writeReviewBtn}
+          onPress={() => navigation.navigate("WriteReview", { movie: selectedMovie })}
+        >
+          <Ionicons name="chatbox" size={18} color="#fff" />
+          <Text style={styles.writeReviewBtnText}>VIẾT ĐÁNH GIÁ</Text>
+        </TouchableOpacity>
+
         {/* NÚT ĐẶT VÉ NỔI */}
         <TouchableOpacity style={styles.floatBookingBtn} onPress={handleBooking}>
           <Text style={styles.bookingBtnText}>ĐẶT VÉ NGAY</Text>
@@ -202,7 +243,7 @@ const styles = StyleSheet.create({
   mainDetails: {
     flex: 1,
     marginLeft: 20,
-    justifyContent: 'center', // Căn giữa nội dung theo chiều dọc
+    justifyContent: 'center',
   },
   movieTitleText: {
     fontSize: 20,
@@ -307,8 +348,29 @@ const styles = StyleSheet.create({
     width: 55, height: 55, borderRadius: 28, backgroundColor: '#b80000',
     justifyContent: 'center', alignItems: 'center', elevation: 5,
     shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5,
-    position: 'absolute', top: -30, // Đẩy nút lên cao
-  }
+    position: 'absolute', top: -30,
+  },
+  writeReviewBtn: {
+    position: 'absolute',
+    bottom: 160,
+    left: 20,
+    right: 20,
+    backgroundColor: "#ffffff",
+    height: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    borderColor: '#b71c1c',
+    borderWidth: 1,
+    marginBottom: 5,
+  },
+  writeReviewBtnText: {
+    color: "#000000",
+    fontSize: 14,
+    fontWeight: "bold"
+  },
 });
 
 export default MovieInfoScreen;

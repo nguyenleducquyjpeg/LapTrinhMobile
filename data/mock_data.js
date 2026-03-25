@@ -22,11 +22,7 @@ export const MOCK_MOVIES = [
         release_date: '26/04/2019',
         description: 'Sau những sự kiện thảm khốc trong Infinity War, vũ trụ đang bị tàn phá. Với sự giúp đỡ của các đồng minh còn lại, Avengers tập hợp một lần nữa để đảo ngược hành động của Thanos.',
         rating: 9.5,
-        reviews: [
-            { id: '1', user_name: 'Minh Quân', rating: 5, comment: 'Phim quá tuyệt vời, kết thúc mãn nhãn cho một hành trình!', date: '20/10/2025' },
-            { id: '2', user_name: 'Thu Hà', rating: 4, comment: 'Hơi dài nhưng rất cảm động.', date: '21/10/2025' },
-            { id: '3', user_name: 'Văn Hùng', rating: 5, comment: 'Diễn xuất và hiệu ứng xuất sắc!', date: '22/10/2025' }
-        ]
+        reviews: [],
     },
     {
         _id: '2',
@@ -36,9 +32,7 @@ export const MOCK_MOVIES = [
         duration: 148,
         description: 'Dom Cobb là một kẻ trộm chuyên nghiệp, người có khả năng xâm nhập vào giấc mơ để đánh cắp bí mật kinh doanh. Anh được giao nhiệm vụ gieo rắc một ý tưởng vào tâm trí đối tượng.',
         rating: 8.8,
-        reviews: [
-            { id: '1', user_name: 'Hoàng Long', rating: 5, comment: 'Hại não nhưng cực kỳ lôi cuốn. Đỉnh cao của Nolan.', date: '15/09/2025' }
-        ]
+        reviews: [],
     },
     {
         _id: '3',
@@ -48,9 +42,7 @@ export const MOCK_MOVIES = [
         duration: 152,
         description: 'Khi mối đe dọa được gọi là Joker gây ra sự hỗn loạn tại Gotham, Người Dơi phải chấp nhận một trong những bài kiểm tra tâm lý lớn nhất để chống lại sự bất công.',
         rating: 9.0,
-        reviews: [
-            { id: '1', user_name: 'Đức Anh', rating: 5, comment: 'Joker là phản diện hay nhất mọi thời đại!', date: '01/11/2025' }
-        ]
+        reviews: [],
     },
     {
         _id: '4',
@@ -60,9 +52,7 @@ export const MOCK_MOVIES = [
         duration: 169,
         description: 'Một nhóm thám hiểm du hành qua một lỗ sâu mới được khám phá trong không gian nhằm nỗ lực đảm bảo sự sống còn của nhân loại khi Trái Đất đang dần lụi tàn.',
         rating: 8.6,
-        reviews: [
-            { id: '1', user_name: 'Phương Linh', rating: 5, comment: 'Nhạc phim và hình ảnh quá đỉnh. Xem mà rợn người.', date: '12/11/2025' }
-        ]
+        reviews: [],
     },
 ];
 
