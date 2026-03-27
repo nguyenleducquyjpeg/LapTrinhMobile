@@ -169,10 +169,10 @@ const HomeScreen = ({ navigation }) => {
         <Text style={[styles.tabText, { marginTop: 28 }]}>ChatAI</Text>
       </TouchableOpacity>
 
-      {/* Khuyến mãi */}
-      <TouchableOpacity style={styles.tabItem} onPress={() => console.log("Khuyến mãi")}>
-        <Ionicons name="gift-outline" size={24} color="#666" />
-        <Text style={styles.tabText}>Khuyến mãi</Text>
+      {/* Lịch sử giao dịch */}
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("TransactionHistory")}>
+        <Ionicons name="receipt-outline" size={24} color="#666" />
+        <Text style={styles.tabText}>Lịch sử</Text>
       </TouchableOpacity>
 
       {/* Cá nhân */}

@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react"; // Đã thêm useEffect
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native"; // Đã thêm Alert
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const PaymentMethodsScreen = ({ navigation, route }) => {
-  const { movie, finalTotal, selectedSeats } = route?.params || {};
+  const { movie, finalTotal, selectedSeats, theater, screening } = route?.params || {};
 
-  // Quản lý phương thức chọn
   const [selectedMethod, setSelectedMethod] = useState("visa");
-
-  // Đồng hồ đếm ngược 10 phút
   const [timeLeft, setTimeLeft] = useState(600);
 
   useEffect(() => {
@@ -44,14 +43,44 @@ const PaymentMethodsScreen = ({ navigation, route }) => {
         { text: "Hủy", style: "cancel" },
         {
           text: "Thanh toán",
-          onPress: () => {
-            // Gửi dữ liệu sang màn hình vé thành công
+          onPress: async () => {
+            const bookingId = "QUY-" + Math.floor(Math.random() * 1000000);
+            try {
+              const user = auth().currentUser;
+              if (user) {
+                await firestore()
+                  .collection('transactions')
+                  .doc(user.uid)
+                  .collection('orders')
+                  .add({
+                    movieTitle: movie?.title || movie?.movie_name,
+                    cinemaLocation: theater?.theater_name || "Chưa cập nhật",
+                    showtime: screening?.screening_time ?
+                      new Date(screening.screening_time).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                      }) : "Chưa cập nhật",
+                    ticketCount: selectedSeats?.length || 0,
+                    seatNumbers: selectedSeats || [],
+                    totalPrice: finalTotal || 0,
+                    status: "completed",
+                    transactionDate: new Date(),
+                    paymentMethod: selectedMethod,
+                    bookingCode: bookingId,
+                  });
+              }
+            } catch (error) {
+              console.error("Lỗi lưu giao dịch:", error);
+            }
             navigation.navigate("TicketSuccessScreen", {
-              movie: movie,
-              selectedSeats: selectedSeats,
-              finalTotal: finalTotal,
+              movie,
+              theater,
+              screening,
+              selectedSeats,
+              finalTotal,
               paymentMethod: selectedMethod,
-              bookingId: "QUY-" + Math.floor(Math.random() * 1000000), // Tạo mã đặt vé ngẫu nhiên
+              bookingId,
               bookingDate: new Date().toLocaleString('vi-VN')
             });
           }
@@ -86,8 +115,11 @@ const PaymentMethodsScreen = ({ navigation, route }) => {
 
         {/* Thông tin phim tóm tắt */}
         <View style={styles.movieSummary}>
-          <Text style={styles.movieName}>{movie?.movie_name}</Text>
-          <Text style={styles.movieDetail}>Ghế: {selectedSeats?.join(", ")}</Text>
+          {/* Dùng movie?.title hoặc movie?.movie_name */}
+          <Text style={styles.movieName}>
+            {movie?.title || movie?.movie_name || "Chưa có tên phim"}
+          </Text>
+          <Text style={styles.movieDetail}>Ghế: {selectedSeats?.join(", ") || "Chưa chọn"}</Text>
         </View>
 
         <Text style={styles.sectionTitle}>CHỌN PHƯƠNG THỨC THANH TOÁN</Text>

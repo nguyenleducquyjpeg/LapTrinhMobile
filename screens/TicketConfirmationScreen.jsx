@@ -1,11 +1,36 @@
+// TicketConfirmationScreen.jsx
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const TicketConfirmationScreen = ({ route, navigation }) => {
-  // Nhận toàn bộ dữ liệu từ ProductScreen truyền sang
   const { movie, theater, screening, selectedSeats, foodItems, finalTotal } = route.params || {};
+
+  // Helper function để format ngày
+  const formatScreeningDate = (dateString) => {
+    if (!dateString) return "Đang cập nhật";
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      return "Đang cập nhật";
+    }
+  };
+
+  // Helper function để format giờ
+  const formatScreeningTime = (dateString) => {
+    if (!dateString) return "Đang cập nhật";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    } catch (e) {
+      return "Đang cập nhật";
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -20,26 +45,31 @@ const TicketConfirmationScreen = ({ route, navigation }) => {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Thông tin phim */}
-        {/* Thông tin phim với Poster */}
         <View style={styles.section}>
           <View style={styles.movieInfoRow}>
             {/* Poster phim */}
             <Image
-              source={{ uri: movie?.movie_poster }}
+              source={{ uri: movie?.image || movie?.movie_poster }} // Ưu tiên 'image' từ Firestore
               style={styles.confirmationPoster}
               resizeMode="cover"
             />
 
             {/* Chi tiết văn bản */}
             <View style={styles.movieTextDetails}>
-              <Text style={styles.movieName} numberOfLines={2}>{movie?.movie_name}</Text>
-              <Text style={styles.detailText}>{theater?.theater_name}</Text>
-              <Text style={styles.detailText}>
-                <Ionicons name="time-outline" size={14} color="#666" />{" "}
-                {screening?.screening_time ? new Date(screening.screening_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
-                {" - "}
-                {screening?.screening_time ? new Date(screening.screening_time).toLocaleDateString('vi-VN') : ""}
+              <Text style={styles.movieName} numberOfLines={2}>
+                {movie?.title || movie?.movie_name}
               </Text>
+              <Text style={styles.detailText}>{theater?.theater_name}</Text>
+
+              {/* FIX: Hiển thị giờ và ngày đúng */}
+              <Text style={styles.detailText}>
+                <Ionicons name="time-outline" size={14} color="#666" />
+                {" "}
+                {formatScreeningTime(screening?.screening_time)}
+                {" - "}
+                {formatScreeningDate(screening?.screening_time)}
+              </Text>
+
               <Text style={styles.detailText}>
                 <Ionicons name="location-outline" size={14} color="#666" /> Suất chiếu: 2D Phụ đề
               </Text>
@@ -107,11 +137,20 @@ const TicketConfirmationScreen = ({ route, navigation }) => {
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.confirmButton}
-          onPress={() => navigation.navigate("PaymentMethodsScreen", {
-            movie,
-            finalTotal,
-            selectedSeats
-          })}
+          onPress={() => {
+            console.log("Navigating to PaymentMethodsScreen...");
+            console.log("Movie:", movie);
+            console.log("FinalTotal:", finalTotal);
+            console.log("SelectedSeats:", selectedSeats);
+
+            navigation.navigate("PaymentMethodsScreen", {
+              movie,
+              finalTotal,
+              selectedSeats,
+              theater,
+              screening
+            });
+          }}
         >
           <Text style={styles.confirmButtonText}>TIẾP TỤC</Text>
         </TouchableOpacity>
@@ -141,7 +180,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   movieInfoRow: {
-    flexDirection: "row", // Chia 2 cột ngang
+    flexDirection: "row",
     alignItems: "flex-start",
   },
   confirmationPoster: {
@@ -169,8 +208,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
-  sectionTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 10, borderBottomWidth: 1, borderBottomColor: "#eee", paddingBottom: 5 },
-  rowBetween: { flexDirection: "row", justifyContent: "space-between", marginVertical: 5 },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingBottom: 5
+  },
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 5
+  },
   label: { fontSize: 15, color: "#555" },
   value: { fontSize: 15, fontWeight: "bold", color: "#333" },
   foodName: { fontSize: 14, color: "#333" },
@@ -185,6 +235,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
+  confirmButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   promoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -211,7 +262,6 @@ const styles = StyleSheet.create({
     color: "#999",
     marginRight: 5,
   },
-  confirmButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
 
 export default TicketConfirmationScreen;

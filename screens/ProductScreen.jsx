@@ -50,6 +50,32 @@ const ProductScreen = ({ navigation, route }) => {
 
   const [quantities, setQuantities] = useState({});
 
+  // Thêm hàm format ngày và giờ
+  const formatScreeningDate = (dateString) => {
+    if (!dateString) return "Đang cập nhật";
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = String(date.getFullYear()).slice(-2);
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      return "Đang cập nhật";
+    }
+  };
+
+  const formatScreeningTime = (dateString) => {
+    if (!dateString) return "--:--";
+    try {
+      const date = new Date(dateString);
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    } catch (e) {
+      return "--:--";
+    }
+  };
+
   const handleIncrement = (id) => {
     setQuantities((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
   };
@@ -99,7 +125,9 @@ const ProductScreen = ({ navigation, route }) => {
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerCinema}><Text style={{ color: '#e71a0f', fontWeight: 'bold' }}>CGV</Text> {theater?.theater_name || "Crescent Mall"}</Text>
-          <Text style={styles.headerInfo}>Cinema 4, 28/01/26, 23:20~1:40</Text>
+          <Text style={styles.headerInfo}>
+            Cinema 4, {formatScreeningDate(screening?.screening_time)}, {formatScreeningTime(screening?.screening_time)}
+          </Text>
         </View>
         <TouchableOpacity>
           <Ionicons name="menu-outline" size={28} color="#e71a0f" />

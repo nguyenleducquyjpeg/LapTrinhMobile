@@ -79,16 +79,22 @@ const MovieInfoScreen = ({ route, navigation }) => {
         <Ionicons name="ticket-outline" size={22} color="#666" />
         <Text style={styles.tabText}>Voucher</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.chatAiButton}>
+      <TouchableOpacity
+        style={styles.chatAiButton}
+        onPress={() => navigation.navigate("ChatAi")}
+      >
         <View style={styles.chatAiCircle}>
-          <Ionicons name="chatbubbles" size={26} color="#fff" />
+          <Ionicons name="chatbubbles" size={30} color="#fff" />
         </View>
         <Text style={[styles.tabText, { marginTop: 28 }]}>ChatAI</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tabItem}>
-        <Ionicons name="gift-outline" size={22} color="#666" />
-        <Text style={styles.tabText}>Khuyến mãi</Text>
+
+      {/* Lịch sử giao dịch */}
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("TransactionHistory")}>
+        <Ionicons name="receipt-outline" size={24} color="#666" />
+        <Text style={styles.tabText}>Lịch sử</Text>
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("AccountInfo")}>
         <Ionicons name="person-outline" size={22} color="#666" />
         <Text style={styles.tabText}>Cá nhân</Text>

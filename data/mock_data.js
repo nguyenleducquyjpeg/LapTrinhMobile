@@ -102,11 +102,10 @@ export const MOCK_SCREENINGS = [
             country: "VN"
         },
         screenings: [
-            { screening_time: "2026-01-28T10:00:00Z", end_time: "2026-01-28T12:00:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T10:30:00Z", end_time: "2026-01-28T12:30:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T11:40:00Z", end_time: "2026-01-28T13:40:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T12:40:00Z", end_time: "2026-01-28T14:40:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T13:10:00Z", end_time: "2026-01-28T15:10:00Z", seats: generateSeats() }
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 14, 30).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 18, 40).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 20, 30).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 22, 20).toISOString(), seats: generateSeats() }
         ]
     },
     {
@@ -118,8 +117,10 @@ export const MOCK_SCREENINGS = [
             country: "VN"
         },
         screenings: [
-            { screening_time: "2026-01-28T13:20:00Z", end_time: "2026-01-28T15:20:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T16:30:00Z", end_time: "2026-01-28T18:30:00Z", seats: generateSeats() }
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 7, 30).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 10, 40).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 15, 30).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 19, 20).toISOString(), seats: generateSeats() }
         ]
     },
     {
@@ -131,11 +132,11 @@ export const MOCK_SCREENINGS = [
             country: "VN"
         },
         screenings: [
-            { screening_time: "2026-01-28T10:00:00Z", end_time: "2026-01-28T12:00:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T10:30:00Z", end_time: "2026-01-28T12:30:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T11:40:00Z", end_time: "2026-01-28T13:40:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T12:40:00Z", end_time: "2026-01-28T14:40:00Z", seats: generateSeats() },
-            { screening_time: "2026-01-28T13:10:00Z", end_time: "2026-01-28T15:10:00Z", seats: generateSeats() }
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 9, 30).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 12, 30).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 16, 40).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 20, 30).toISOString(), seats: generateSeats() },
+            { screening_time: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 12, 20).toISOString(), seats: generateSeats() }
         ]
     }
 ];

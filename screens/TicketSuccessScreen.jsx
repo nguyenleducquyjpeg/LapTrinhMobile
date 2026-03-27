@@ -7,7 +7,32 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 
 const TicketSuccessScreen = ({ route, navigation }) => {
-    const { movie, selectedSeats, finalTotal, bookingId, bookingDate } = route.params || {};
+    const { movie, selectedSeats, finalTotal, bookingId, bookingDate, theater, screening } = route.params || {};
+
+    // Format ngày chiếu
+    const formatScreeningDate = (dateString) => {
+        if (!dateString) return "Đang cập nhật";
+        try {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        } catch (e) {
+            return "Đang cập nhật";
+        }
+    };
+
+    // Format giờ chiếu
+    const formatScreeningTime = (dateString) => {
+        if (!dateString) return "Đang cập nhật";
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        } catch (e) {
+            return "Đang cập nhật";
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -22,17 +47,17 @@ const TicketSuccessScreen = ({ route, navigation }) => {
                 <View style={styles.ticketCard}>
                     {/* Phần trên của vé */}
                     <View style={styles.ticketTop}>
-                        <Text style={styles.movieName}>{movie?.movie_name}</Text>
-                        <Text style={styles.theaterName}>Vincom Quảng Ngãi - P.03</Text>
+                        <Text style={styles.movieName}>{movie?.title || movie?.movie_name}</Text>
+                        <Text style={styles.theaterName}>{theater?.theater_name || "Vincom Center Landmark 81"}</Text>
 
                         <View style={styles.infoGrid}>
                             <View style={styles.infoItem}>
                                 <Text style={styles.infoLabel}>Ngày</Text>
-                                <Text style={styles.infoValue}>04/02/2026</Text>
+                                <Text style={styles.infoValue}>{formatScreeningDate(screening?.screening_time)}</Text>
                             </View>
                             <View style={styles.infoItem}>
                                 <Text style={styles.infoLabel}>Giờ chiếu</Text>
-                                <Text style={styles.infoValue}>20:00</Text>
+                                <Text style={styles.infoValue}>{formatScreeningTime(screening?.screening_time)}</Text>
                             </View>
                             <View style={styles.infoItem}>
                                 <Text style={styles.infoLabel}>Ghế</Text>
@@ -55,6 +80,7 @@ const TicketSuccessScreen = ({ route, navigation }) => {
                         </View>
                         <Text style={styles.bookingIdText}>Mã đặt vé: {bookingId}</Text>
                         <Text style={styles.noteText}>Đưa mã này cho nhân viên để vào rạp</Text>
+                        <Text style={styles.totalPrice}>Tổng: {finalTotal?.toLocaleString() || "0"} đ</Text>
                     </View>
                 </View>
 
@@ -70,7 +96,7 @@ const TicketSuccessScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#e71a0f" }, // Màu đỏ thương hiệu
+    container: { flex: 1, backgroundColor: "#e71a0f" },
     header: { flexDirection: "row", justifyContent: "space-between", padding: 20, alignItems: "center" },
     headerTitle: { color: "#fff", fontSize: 18, fontWeight: "bold" },
     scrollContent: { padding: 20, alignItems: "center" },
@@ -81,6 +107,7 @@ const styles = StyleSheet.create({
     theaterName: { fontSize: 14, color: "#666", marginBottom: 20 },
 
     infoGrid: { flexDirection: "row", justifyContent: "space-between" },
+    infoItem: { alignItems: "center" },
     infoLabel: { fontSize: 12, color: "#999", marginBottom: 5 },
     infoValue: { fontSize: 15, fontWeight: "bold", color: "#333" },
 
@@ -93,6 +120,7 @@ const styles = StyleSheet.create({
     qrContainer: { padding: 10, backgroundColor: "#fff", borderWidth: 1, borderColor: "#eee", borderRadius: 10 },
     bookingIdText: { marginTop: 15, fontSize: 16, fontWeight: "bold", color: "#333" },
     noteText: { fontSize: 12, color: "#999", marginTop: 5 },
+    totalPrice: { fontSize: 16, fontWeight: "bold", color: "#e71a0f", marginTop: 10 },
 
     homeBtn: { marginTop: 30, backgroundColor: "rgba(255,255,255,0.2)", paddingHorizontal: 30, paddingVertical: 15, borderRadius: 30, borderWidth: 1, borderColor: "#fff" },
     homeBtnText: { color: "#fff", fontWeight: "bold" }

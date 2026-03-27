@@ -17,6 +17,8 @@ import TicketConfirmationScreen from "./screens/TicketConfirmationScreen";
 import TicketSuccessScreen from "./screens/TicketSuccessScreen";
 import ChatAiScreen from "./screens/ChatAiScreen";
 import WriteReviewScreen from "./screens/ReviewScreen";
+import TransactionHistoryScreen from "./screens/TransactionHistoryScreen";
+import TransactionDetailScreen from "./screens/TransactionDetailScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +41,8 @@ const App = () => {
           <Stack.Screen name="TicketConfirmationScreen" component={TicketConfirmationScreen} options={{ headerShown: false }} />
           <Stack.Screen name="TicketSuccessScreen" component={TicketSuccessScreen} options={{ headerShown: false }} />
           <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TransactionHistory" component={TransactionHistoryScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="TransactionDetailScreen" component={TransactionDetailScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
