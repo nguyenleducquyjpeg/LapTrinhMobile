@@ -5,6 +5,9 @@ import Header from "../components/Header";
 import MovieCard from "../components/MovieCard";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import firestore from '@react-native-firebase/firestore';
+import { uploadVouchersToFirestore } from "../utils/uploadVouchersToFirestore";
+import { uploadProductsToFirestore } from "../utils/uploadProductsToFirestore";
+import { uploadScreeningsToFirestore } from "../utils/uploadScreeningsToFirestore";
 
 import { BANNERS, MOCK_MOVIES, CATEGORIES, PROMOTIONS, EGIFTS, VIDEOS } from "../data/mock_data";
 
@@ -59,6 +62,9 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     //uploadMoviesToFirestore(); // Mở comment dòng này, Save để chạy, sau đó đóng lại ngay!
+    //uploadVouchersToFirestore(); 
+    //uploadProductsToFirestore();
+    //uploadScreeningsToFirestore();
   }, []);
 
   useEffect(() => {
@@ -97,7 +103,7 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={BANNERS}
         horizontal
-        snapToInterval={width * 0.85 + 20} // Chiều rộng ảnh + khoảng cách margin
+        snapToInterval={width * 0.85 + 20}
         decelerationRate="fast"
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.id}
@@ -153,7 +159,7 @@ const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       {/* Voucher */}
-      <TouchableOpacity style={styles.tabItem} onPress={() => console.log("Voucher")}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("VoucherListScreen")}>
         <Ionicons name="ticket-outline" size={24} color="#666" />
         <Text style={styles.tabText}>Voucher</Text>
       </TouchableOpacity>

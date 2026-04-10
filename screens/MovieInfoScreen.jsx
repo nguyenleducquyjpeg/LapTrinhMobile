@@ -16,13 +16,11 @@ import firestore from '@react-native-firebase/firestore';
 const { width } = Dimensions.get('window');
 
 const MovieInfoScreen = ({ route, navigation }) => {
-  // Nhận dữ liệu phim cơ bản từ trang trước truyền sang
   const { movie } = route.params || {};
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   const openTrailer = () => {
     if (!selectedMovie?.trailer_id) return;
-
     const url = `https://www.youtube.com/watch?v=${selectedMovie.trailer_id}`;
     Linking.openURL(url);
   };
@@ -75,8 +73,8 @@ const MovieInfoScreen = ({ route, navigation }) => {
         <Ionicons name="home-outline" size={22} color="#666" />
         <Text style={styles.tabText}>Trang chủ</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tabItem}>
-        <Ionicons name="ticket-outline" size={22} color="#666" />
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("VoucherListScreen")}>
+        <Ionicons name="ticket-outline" size={24} color="#666" />
         <Text style={styles.tabText}>Voucher</Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -89,7 +87,6 @@ const MovieInfoScreen = ({ route, navigation }) => {
         <Text style={[styles.tabText, { marginTop: 28 }]}>ChatAI</Text>
       </TouchableOpacity>
 
-      {/* Lịch sử giao dịch */}
       <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("TransactionHistory")}>
         <Ionicons name="receipt-outline" size={24} color="#666" />
         <Text style={styles.tabText}>Lịch sử</Text>
@@ -105,13 +102,12 @@ const MovieInfoScreen = ({ route, navigation }) => {
   return (
     <View style={styles.mainWrapper}>
       <SafeAreaView style={styles.safeArea}>
-        {/* HEADER VỚI NÚT BACK */}
+        {/* HEADER VỚI NÚT BACK VÀ ICON ĐÁNH GIÁ */}
         <View style={styles.customHeader}>
           <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={24} color="#000" />
           </TouchableOpacity>
           <Text style={styles.headerTitle} numberOfLines={1}>Chi tiết phim</Text>
-          <View style={{ width: 40 }} />
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -151,7 +147,7 @@ const MovieInfoScreen = ({ route, navigation }) => {
                 <Text style={styles.ratingMax}>/10</Text>
               </View>
 
-              {/* NÚT XEM TRAILER MỚI */}
+              {/* NÚT XEM TRAILER */}
               <TouchableOpacity style={styles.trailerBtn} onPress={openTrailer}>
                 <Ionicons name="play-circle" size={20} color="#fff" />
                 <Text style={styles.trailerBtnText}>XEM TRAILER</Text>
@@ -167,9 +163,17 @@ const MovieInfoScreen = ({ route, navigation }) => {
             </Text>
           </View>
 
-          {/* PHẦN ĐÁNH GIÁ (REVIEWS) - MỚI THÊM */}
+          {/* PHẦN ĐÁNH GIÁ */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionHeader}>Đánh giá từ khán giả</Text>
+            <View style={styles.reviewHeaderRow}>
+              <Text style={styles.sectionHeader}>Đánh giá từ khán giả</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("WriteReview", { movie: selectedMovie })}
+              >
+                <Ionicons name="add-circle" size={24} color="#b71c1c" />
+              </TouchableOpacity>
+            </View>
+
             {selectedMovie.reviews && selectedMovie.reviews.length > 0 ? (
               selectedMovie.reviews.map((review) => (
                 <View key={review.id} style={styles.reviewItem}>
@@ -190,19 +194,10 @@ const MovieInfoScreen = ({ route, navigation }) => {
           </View>
         </ScrollView>
 
-        <TouchableOpacity
-          style={styles.writeReviewBtn}
-          onPress={() => navigation.navigate("WriteReview", { movie: selectedMovie })}
-        >
-          <Ionicons name="chatbox" size={18} color="#fff" />
-          <Text style={styles.writeReviewBtnText}>VIẾT ĐÁNH GIÁ</Text>
-        </TouchableOpacity>
-
         {/* NÚT ĐẶT VÉ NỔI */}
         <TouchableOpacity style={styles.floatBookingBtn} onPress={handleBooking}>
           <Text style={styles.bookingBtnText}>ĐẶT VÉ NGAY</Text>
         </TouchableOpacity>
-
       </SafeAreaView>
       {renderFooterTab()}
     </View>
@@ -221,16 +216,37 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     height: 56,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
   },
-  headerTitle: { fontSize: 17, fontWeight: "bold", color: "#000", flex: 1, textAlign: 'center' },
+  headerTitle: {
+    fontSize: 17,
+    fontWeight: "bold",
+    color: "#000",
+    flex: 1,
+    textAlign: 'center'
+  },
   iconCircle: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: "#f0f0f0", justifyContent: "center", alignItems: "center",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  // ✅ Style cho icon đánh giá
+  reviewIconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#fff5f5",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   // Movie Info
   movieHeaderSection: {
-    flexDirection: 'row', // Chia thành 2 cột ngang
+    flexDirection: 'row',
     padding: 16,
     backgroundColor: '#fff',
   },
@@ -288,7 +304,7 @@ const styles = StyleSheet.create({
   // Nút Trailer
   trailerBtn: {
     flexDirection: 'row',
-    backgroundColor: '#b71c1c', // Màu đen để nổi bật trên nền trắng
+    backgroundColor: '#b71c1c',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 6,
@@ -304,9 +320,28 @@ const styles = StyleSheet.create({
   },
 
   // Sections
-  sectionContainer: { paddingHorizontal: 16, marginTop: 25 },
-  sectionHeader: { fontSize: 18, fontWeight: "bold", color: "#000", marginBottom: 12 },
-  descriptionText: { fontSize: 14, color: "#444", lineHeight: 22, textAlign: 'justify' },
+  sectionContainer: {
+    paddingHorizontal: 16,
+    marginTop: 25
+  },
+  // ✅ Thêm style cho review header row
+  reviewHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: "#444",
+    lineHeight: 22,
+    textAlign: 'justify'
+  },
 
   // Review Styles
   reviewItem: {
@@ -317,21 +352,59 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#eee',
   },
-  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  reviewUser: { fontWeight: 'bold', color: '#333', fontSize: 14 },
-  starRow: { flexDirection: 'row', alignItems: 'center' },
-  reviewRatingText: { fontSize: 12, marginLeft: 3, color: '#666' },
-  reviewComment: { color: '#555', marginVertical: 6, fontSize: 13, lineHeight: 18 },
-  reviewDate: { color: '#999', fontSize: 11, textAlign: 'right' },
-  noReviewText: { color: '#999', fontStyle: 'italic' },
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  reviewUser: {
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: 14
+  },
+  starRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  reviewRatingText: {
+    fontSize: 12,
+    marginLeft: 3,
+    color: '#666'
+  },
+  reviewComment: {
+    color: '#555',
+    marginVertical: 6,
+    fontSize: 13,
+    lineHeight: 18
+  },
+  reviewDate: {
+    color: '#999',
+    fontSize: 11,
+    textAlign: 'right'
+  },
+  noReviewText: {
+    color: '#999',
+    fontStyle: 'italic'
+  },
 
   // Booking Button
   floatBookingBtn: {
-    position: 'absolute', bottom: 100, left: 20, right: 20,
-    backgroundColor: "#b71c1c", height: 56, borderRadius: 28,
-    alignItems: 'center', justifyContent: 'center', elevation: 8,
+    position: 'absolute',
+    bottom: 100,
+    left: 20,
+    right: 20,
+    backgroundColor: "#b71c1c",
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
   },
-  bookingBtnText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  bookingBtnText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold"
+  },
 
   // --- STYLES CHO FOOTER ---
   footerContainer: {
@@ -347,35 +420,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingBottom: 5,
   },
-  tabItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  tabText: { fontSize: 10, color: '#666', marginTop: 4 },
-  chatAiButton: { flex: 1, alignItems: 'center', justifyContent: 'center', position: 'relative' },
-  chatAiCircle: {
-    width: 55, height: 55, borderRadius: 28, backgroundColor: '#b80000',
-    justifyContent: 'center', alignItems: 'center', elevation: 5,
-    shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5,
-    position: 'absolute', top: -30,
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  writeReviewBtn: {
-    position: 'absolute',
-    bottom: 160,
-    left: 20,
-    right: 20,
-    backgroundColor: "#ffffff",
-    height: 50,
-    borderRadius: 25,
+  tabText: {
+    fontSize: 10,
+    color: '#666',
+    marginTop: 4
+  },
+  chatAiButton: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    borderColor: '#b71c1c',
-    borderWidth: 1,
-    marginBottom: 5,
+    position: 'relative'
   },
-  writeReviewBtnText: {
-    color: "#000000",
-    fontSize: 14,
-    fontWeight: "bold"
+  chatAiCircle: {
+    width: 55,
+    height: 55,
+    borderRadius: 28,
+    backgroundColor: '#b80000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    position: 'absolute',
+    top: -30,
   },
 });
 

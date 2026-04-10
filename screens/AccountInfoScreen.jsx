@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,16 +6,97 @@ import {
   ScrollView,
   StyleSheet,
   Image,
-  Dimensions
+  Dimensions,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import { uploadAndSaveAvatar } from '../utils/uploadAvatarToFirebase';
 
 const AccountInfoScreen = () => {
   const navigation = useNavigation();
+
+  // ✅ State lưu thông tin người dùng
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [settingsVisible, setSettingsVisible] = useState(false);
+
+  // ✅ Lấy dữ liệu người dùng từ Firestore khi component mount
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+
+      // Lấy user hiện tại từ Firebase Auth
+      const currentUser = auth().currentUser;
+
+      if (currentUser) {
+        // Lấy dữ liệu từ Firestore
+        const userDoc = await firestore()
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          console.log("User data:", userData);
+          setUser({
+            uid: currentUser.uid,
+            email: userData.email || currentUser.email,
+            fullName: userData.fullName || "Người dùng",
+            phoneNumber: userData.phoneNumber || "N/A",
+            createdAt: userData.createdAt,
+          });
+        } else {
+          // Nếu không có dữ liệu, dùng thông tin từ Auth
+          setUser({
+            uid: currentUser.uid,
+            email: currentUser.email,
+            fullName: currentUser.displayName || "Người dùng",
+            phoneNumber: "N/A",
+            createdAt: null,
+          });
+        }
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Lỗi lấy dữ liệu:", error);
+      setLoading(false);
+    }
+  };
+
+  // Hàm đăng xuất
+  const handleLogout = async () => {
+    Alert.alert(
+      "Xác nhận",
+      "Bạn có chắc chắn muốn đăng xuất?",
+      [
+        { text: "Hủy", style: "cancel" },
+        {
+          text: "Đăng xuất",
+          onPress: async () => {
+            try {
+              await auth().signOut();
+              navigation.navigate("Login");
+            } catch (error) {
+              Alert.alert("Lỗi", "Không thể đăng xuất: " + error.message);
+            }
+          }
+        }
+      ]
+    );
+  };
 
   // --- HÀM RENDER FOOTER ĐỒNG BỘ VỚI TRANG HOME ---
   const renderFooterTab = () => (
@@ -25,21 +106,24 @@ const AccountInfoScreen = () => {
         <Text style={styles.tabText}>Trang chủ</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.tabItem} onPress={() => console.log("Voucher")}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("VoucherListScreen")}>
         <Ionicons name="ticket-outline" size={24} color="#666" />
         <Text style={styles.tabText}>Voucher</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.chatAiButton} onPress={() => console.log("Chat AI")}>
+      <TouchableOpacity
+        style={styles.chatAiButton}
+        onPress={() => navigation.navigate("ChatAi")}
+      >
         <View style={styles.chatAiCircle}>
           <Ionicons name="chatbubbles" size={30} color="#fff" />
         </View>
         <Text style={[styles.tabText, { marginTop: 28 }]}>ChatAI</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.tabItem} onPress={() => console.log("Khuyến mãi")}>
-        <Ionicons name="gift-outline" size={24} color="#666" />
-        <Text style={styles.tabText}>Khuyến mãi</Text>
+      <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("TransactionHistory")}>
+        <Ionicons name="receipt-outline" size={24} color="#666" />
+        <Text style={styles.tabText}>Lịch sử</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate("AccountInfo")}>
@@ -48,6 +132,18 @@ const AccountInfoScreen = () => {
       </TouchableOpacity>
     </View>
   );
+
+  // ✅ Hiển thị loading
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#b80000" />
+          <Text style={{ marginTop: 10 }}>Đang tải thông tin...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
@@ -68,18 +164,18 @@ const AccountInfoScreen = () => {
                 <View style={styles.notificationDot} />
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => console.log("Mở cài đặt")}>
-              <Ionicons name="settings-outline" size={26} color="#000" marginRight={10} />
+            <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
+              <Ionicons name="settings-outline" size={26} color="#000" />
             </TouchableOpacity>
           </View>
 
-          {/* Thông tin Avatar & Tên */}
+          {/* Thông tin Avatar & Tên từ Firestore */}
           <View style={styles.profileSection}>
-            <Image
-              source={require("../assets/Relight_00001_fzrmc_1757258799.jpg")}
-              style={styles.avatar}
-            />
-            <Text style={styles.userName}>Nguyễn Lê Đức Quý</Text>
+            <View style={styles.avatar}>
+              <Ionicons name="person-circle-outline" size={80} color="#adadad" />
+            </View>
+            <Text style={styles.userName}>{user?.fullName || "Người dùng"}</Text>
+            <Text style={styles.userEmail}>{user?.email || "email@example.com"}</Text>
             <View style={styles.memberBadge}>
               <Text style={styles.memberText}>MEMBER</Text>
             </View>
@@ -93,12 +189,10 @@ const AccountInfoScreen = () => {
               <MaterialIcons name="keyboard-arrow-right" size={24} color="#000" />
             </View>
             <View style={styles.barcodeContainer}>
-              <Image
-                source={require("../assets/z7474767855443_0fd06a1c3ed46011343a01191c0b3b97.jpg")}
-                style={styles.barcodeImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.barcodeNumber}>9991937911165854</Text>
+              <View style={styles.barcodePlaceholder}>
+                <Ionicons name="barcode-outline" size={60} color="#ddd" />
+              </View>
+              <Text style={styles.barcodeNumber}>{user?.uid?.substring(0, 16) || "N/A"}</Text>
             </View>
           </View>
 
@@ -111,6 +205,40 @@ const AccountInfoScreen = () => {
             <View style={[styles.statBox, { borderLeftWidth: 0.5, borderLeftColor: "#ddd" }]}>
               <Text style={styles.statLabel}>Điểm Thưởng</Text>
               <Text style={styles.statValue}>20</Text>
+            </View>
+          </View>
+
+          {/* Hiển thị thông tin chi tiết từ Firestore */}
+          <View style={styles.infoCard}>
+            <Text style={styles.infoTitle}>Thông tin tài khoản</Text>
+
+            <View style={styles.infoRow}>
+              <Ionicons name="mail-outline" size={20} color="#e71a0f" />
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Email</Text>
+                <Text style={styles.infoValue}>{user?.email || "N/A"}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Ionicons name="call-outline" size={20} color="#e71a0f" />
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Số điện thoại</Text>
+                <Text style={styles.infoValue}>{user?.phoneNumber || "N/A"}</Text>
+              </View>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Ionicons name="calendar-outline" size={20} color="#e71a0f" />
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Ngày tạo tài khoản</Text>
+                <Text style={styles.infoValue}>
+                  {user?.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString('vi-VN')
+                    : "N/A"
+                  }
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -128,12 +256,12 @@ const AccountInfoScreen = () => {
           <View style={styles.logoutSection}>
             <TouchableOpacity
               style={styles.customLogoutButton}
-              onPress={() => navigation.navigate("Login")} // Thêm dòng này để chuyển về trang Login
+              onPress={handleLogout}
             >
               <Text style={styles.customLogoutText}>ĐĂNG XUẤT</Text>
             </TouchableOpacity>
 
-            <Text style={styles.versionText}>Phiên bản 1.0.0 (ShopAI)</Text>
+            <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -153,12 +281,20 @@ const MenuItem = ({ icon, label, color }) => (
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scrollContent: { flexGrow: 1, paddingBottom: 100 }, // Thêm paddingBottom để không bị footer che nút logout
+  scrollContent: { flexGrow: 1, paddingBottom: 100 },
   headerButtons: { flexDirection: "row", justifyContent: "space-between", padding: 15 },
   profileSection: { alignItems: "center" },
-  avatar: { width: 80, height: 80, borderRadius: 40, borderWidth: 1, borderColor: "#ddd" },
+  avatar: {
+    width: 80,
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff5f5",
+    overflow: 'hidden',
+  },
   userName: { color: "#000", fontSize: 20, fontWeight: "bold", marginTop: 10 },
-  memberBadge: { backgroundColor: "#E0E0E0", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginTop: 5 },
+  userEmail: { color: "#666", fontSize: 14, marginTop: 4 },
+  memberBadge: { backgroundColor: "#E0E0E0", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginTop: 10 },
   memberText: { color: "#C62828", fontSize: 12, fontWeight: "bold" },
   membershipCard: {
     backgroundColor: "#fff",
@@ -174,8 +310,16 @@ const styles = StyleSheet.create({
   cardHeader: { flexDirection: "row", alignItems: "center" },
   cardTitle: { flex: 1, marginLeft: 10, fontWeight: "bold", color: "#000" },
   barcodeContainer: { alignItems: "center", marginTop: 15 },
-  barcodeImage: { width: "100%", height: 70, marginBottom: 5 },
-  barcodeNumber: { letterSpacing: 2, fontWeight: "bold", color: "#000" },
+  barcodePlaceholder: {
+    width: "100%",
+    height: 70,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10
+  },
+  barcodeNumber: { letterSpacing: 2, fontWeight: "bold", color: "#000", fontSize: 12 },
   statsRow: {
     flexDirection: "row",
     backgroundColor: "#fff",
@@ -188,25 +332,65 @@ const styles = StyleSheet.create({
   statBox: { flex: 1, padding: 15, alignItems: "center" },
   statLabel: { color: "#757575", fontSize: 12 },
   statValue: { color: "#000", fontSize: 22, fontWeight: "bold", marginTop: 5 },
+
+  // Style cho thông tin chi tiết
+  infoCard: {
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    marginTop: 15,
+    borderRadius: 12,
+    padding: 15,
+    elevation: 2,
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#000",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingBottom: 10,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  infoContent: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 12,
+    color: "#999",
+    marginBottom: 4,
+  },
+  infoValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+  },
+
   menuGrid: { flexDirection: "row", flexWrap: "wrap", padding: 10, backgroundColor: "#fff", marginTop: 20 },
   menuItem: { width: "33.33%", alignItems: "center", marginVertical: 20 },
   menuLabel: { color: "#333", fontSize: 12, marginTop: 8, textAlign: "center" },
   logoutSection: {
     paddingHorizontal: 20,
     marginTop: 20,
-    paddingBottom: 120, // Tăng khoảng cách để không bị Footer che và thoáng mắt hơn
+    paddingBottom: 120,
     alignItems: 'center',
   },
   customLogoutButton: {
-    backgroundColor: "#b71c1c", // Màu đỏ chủ đạo của ShopAI
+    backgroundColor: "#b71c1c",
     width: '100%',
     height: 50,
-    borderRadius: 28, // Tạo độ bo tròn hoàn hảo như hình mẫu
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    // Đổ bóng cho Android
     elevation: 8,
-    // Đổ bóng cho iOS
     shadowColor: "#e71a0f",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -216,7 +400,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",
-    letterSpacing: 1, // Tạo khoảng cách chữ cho chuyên nghiệp
+    letterSpacing: 1,
   },
   versionText: {
     fontSize: 13,
@@ -234,7 +418,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red'
   },
 
-  // --- STYLES CHO FOOTER (Sao chép từ HomeScreen) ---
+  // --- STYLES CHO FOOTER ---
   footerContainer: {
     flexDirection: 'row',
     height: 70,

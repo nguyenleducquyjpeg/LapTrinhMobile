@@ -140,3 +140,79 @@ export const MOCK_SCREENINGS = [
         ]
     }
 ];
+
+export const VOUCHERS = [
+    {
+        id: "voucher_1",
+        code: "SUMMER50",
+        title: "Giảm 50% - Mùa hè",
+        description: "Giảm 50% giá vé cho tất cả suất chiếu trong mùa hè",
+        discount: 50,
+        discountType: "percent", // "percent" hoặc "fixed"
+        minPrice: 100000,
+        maxDiscount: 200000,
+        expireDate: "2026-08-31",
+        image: "https://via.placeholder.com/300x150?text=Summer+50%",
+        isUsed: false,
+        usageCount: 0,
+        maxUsage: 1
+    },
+    {
+        id: "voucher_2",
+        code: "NEWUSER100",
+        title: "Giảm 100K - Người dùng mới",
+        description: "Khách hàng mới được giảm 100.000đ cho lần đầu tiên",
+        discount: 100000,
+        discountType: "fixed",
+        minPrice: 150000,
+        expireDate: "2026-12-31",
+        image: "https://via.placeholder.com/300x150?text=New+User",
+        isUsed: false,
+        usageCount: 0,
+        maxUsage: 1
+    },
+    {
+        id: "voucher_3",
+        code: "WEEKEND30",
+        title: "Giảm 30% - Cuối tuần",
+        description: "Giảm 30% giá vé vào thứ 6, 7 hàng tuần",
+        discount: 30,
+        discountType: "percent",
+        minPrice: 70000,
+        maxDiscount: 150000,
+        expireDate: "2026-06-30",
+        image: "https://via.placeholder.com/300x150?text=Weekend+30%",
+        isUsed: false,
+        usageCount: 0,
+        maxUsage: 2
+    },
+    {
+        id: "voucher_4",
+        code: "COMBO40",
+        title: "Giảm 40K - Combo bắp nước",
+        description: "Giảm 40.000đ khi mua combo bắp nước",
+        discount: 40000,
+        discountType: "fixed",
+        minPrice: 100000,
+        expireDate: "2026-07-31",
+        image: "https://via.placeholder.com/300x150?text=Combo+40K",
+        isUsed: false,
+        usageCount: 0,
+        maxUsage: 3
+    },
+    {
+        id: "voucher_5",
+        code: "LOYALTY15",
+        title: "Giảm 15% - Thành viên thân thiết",
+        description: "Thành viên được giảm 15% cho mọi giao dịch",
+        discount: 15,
+        discountType: "percent",
+        minPrice: 50000,
+        maxDiscount: 300000,
+        expireDate: "2026-12-31",
+        image: "https://via.placeholder.com/300x150?text=Loyalty+15%",
+        isUsed: false,
+        usageCount: 0,
+        maxUsage: 10
+    },
+];

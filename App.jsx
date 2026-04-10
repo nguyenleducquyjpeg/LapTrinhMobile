@@ -19,6 +19,9 @@ import ChatAiScreen from "./screens/ChatAiScreen";
 import WriteReviewScreen from "./screens/ReviewScreen";
 import TransactionHistoryScreen from "./screens/TransactionHistoryScreen";
 import TransactionDetailScreen from "./screens/TransactionDetailScreen";
+import VoucherListScreen from "./screens/VoucherListScreen";
+import VoucherDetailScreen from "./screens/VoucherDetailScreen";
+import SettingsScreen from "./screens/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +46,9 @@ const App = () => {
           <Stack.Screen name="WriteReview" component={WriteReviewScreen} options={{ headerShown: false }} />
           <Stack.Screen name="TransactionHistory" component={TransactionHistoryScreen} options={{ headerShown: false }} />
           <Stack.Screen name="TransactionDetailScreen" component={TransactionDetailScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="VoucherListScreen" component={VoucherListScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="VoucherDetailScreen" component={VoucherDetailScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="SettingsScreen" component={SettingsScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
