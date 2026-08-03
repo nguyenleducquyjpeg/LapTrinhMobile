@@ -4,6 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
+// Địa chỉ API Server Node.js kết nối PostgreSQL (10.0.2.2 trỏ tới localhost trên Android Emulator)
+const API_POSTGRES_REGISTER = "http://10.0.2.2:3000/api/users/register";
+
 const SignUpScreen = ({ navigation }) => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
@@ -12,14 +15,12 @@ const SignUpScreen = ({ navigation }) => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Hàm kiểm tra định dạng Email bằng Regex
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
 
     const handleSignUp = async () => {
-        // 2. Kiểm tra thêm trường số điện thoại không được để trống
         if (!fullName.trim() || !email.trim() || !phoneNumber.trim() || !password || !confirmPassword) {
             Alert.alert("Lỗi", "Vui lòng điền đầy đủ tất cả các trường thông tin.");
             return;
@@ -38,16 +39,17 @@ const SignUpScreen = ({ navigation }) => {
         setLoading(true);
 
         try {
-            // Tạo tài khoản trên Firebase Auth
-            const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+            // =========================================================
+            // BƯỚC 1: ĐĂNG KÝ VÀ LƯU DỮ LIỆU LÊN FIREBASE & FIRESTORE
+            // =========================================================
+            const userCredential = await auth().createUserWithEmailAndPassword(email.trim(), password);
             const uid = userCredential.user.uid;
 
-            // 3. Đẩy dữ liệu lên Firestore bao gồm cả phoneNumber
+            // Lưu dữ liệu vào Firestore
             await firestore().collection('users').doc(uid).set({
                 fullName: String(fullName),
                 email: String(email).toLowerCase(),
                 phoneNumber: String(phoneNumber),
-                password: password,
                 createdAt: new Date().toISOString(),
             });
 
@@ -55,14 +57,45 @@ const SignUpScreen = ({ navigation }) => {
                 displayName: fullName,
             });
 
+            console.log("1. Đã ghi dữ liệu thành công lên Firebase & Firestore!");
+
+            // =========================================================
+            // BƯỚC 2: GỬI DỮ LIỆU SANG POSTGRESQL ĐỂ MÃ HÓA PII (AES-256)
+            // =========================================================
+            try {
+                const response = await fetch(API_POSTGRES_REGISTER, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email.trim().toLowerCase(),
+                        password: password,
+                        full_name: fullName.trim(),
+                        phone_number: phoneNumber.trim(),
+                    }),
+                });
+
+                const pgData = await response.json();
+
+                if (response.ok) {
+                    console.log("2. Đã mã hóa và lưu PII thành công vào PostgreSQL!", pgData);
+                } else {
+                    console.warn("PostgreSQL trả về lỗi:", pgData.error);
+                }
+            } catch (pgError) {
+                console.error("Không thể gửi dữ liệu tới PostgreSQL Backend:", pgError);
+            }
+
+            // =========================================================
+            // BƯỚC 3: THÔNG BÁO HOÀN TẤT VÀ CHUYỂN MÀN HÌNH
+            // =========================================================
             setLoading(false);
-            Alert.alert("Thành công", "Tài khoản và số điện thoại đã được lưu!", [
+            Alert.alert("Thành công", "Tài khoản của bạn đã được đăng ký và bảo mật thành công!", [
                 { text: "OK", onPress: () => navigation.navigate("Login") }
             ]);
 
         } catch (error) {
             setLoading(false);
-            Alert.alert("Lỗi", error.message);
+            Alert.alert("Lỗi Đăng Ký", error.message);
         }
     };
 
@@ -91,14 +124,13 @@ const SignUpScreen = ({ navigation }) => {
                         autoCapitalize="none"
                     />
 
-                    {/* 4. Thêm ô nhập Số điện thoại vào giao diện */}
                     <Text style={styles.label}>Số điện thoại</Text>
                     <TextInput
                         placeholder="Nhập số điện thoại"
                         style={styles.input}
                         value={phoneNumber}
                         onChangeText={setPhoneNumber}
-                        keyboardType="phone-pad" // Hiển thị bàn phím số
+                        keyboardType="phone-pad"
                     />
 
                     <Text style={styles.label}>Mật khẩu</Text>
@@ -163,7 +195,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 10,
         elevation: 5,
-        height: 55, // Cố định chiều cao để không nhảy khi hiện Loading
+        height: 55,
         justifyContent: 'center'
     },
     buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold", fontSize: 18 },

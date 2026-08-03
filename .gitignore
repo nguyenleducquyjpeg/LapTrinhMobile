@@ -73,3 +73,9 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+
+node_modules/
+.idea/
+android/app/build/
+android/app/my-upload-key.keystore

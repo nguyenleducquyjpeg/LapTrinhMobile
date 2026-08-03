@@ -11,40 +11,87 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+
+// Địa chỉ API Backend Node.js kết nối PostgreSQL
+const API_LOGIN_POSTGRES = "http://10.0.2.2:3000/api/users/login";
 
 const LoginScreen = ({ navigation }) => {
-    // 2. Khai báo State để lưu thông tin nhập liệu
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // 3. Hàm xử lý đăng nhập thực tế
     const handleLogin = async () => {
-        // Kiểm tra đầu vào cơ bản
         if (!email.trim() || !password) {
             Alert.alert("Thông báo", "Vui lòng nhập đầy đủ Email và Mật khẩu.");
             return;
         }
 
-        setLoading(true); // Hiện icon load
+        setLoading(true);
 
         try {
-            // Gọi hàm đăng nhập của Firebase
-            await auth().signInWithEmailAndPassword(email.trim(), password);
+            // =========================================================
+            // 1. ĐĂNG NHẬP FIREBASE AUTH & LẤY DỮ LIỆU TỪ FIRESTORE
+            // =========================================================
+            const userCredential = await auth().signInWithEmailAndPassword(email.trim(), password);
+            const uid = userCredential.user.uid;
+
+            // Đọc thông tin người dùng từ Firestore
+            const userDoc = await firestore().collection('users').doc(uid).get();
+            const firestoreData = userDoc.exists ? userDoc.data() : null;
+
+            console.log("1. Đăng nhập Firebase Auth & Firestore thành công!");
+
+            // =========================================================
+            // 2. LẤY THÔNG TIN PII ĐÃ GIẢI MÃ TỪ POSTGRESQL BACKEND
+            // =========================================================
+            let pgUserData = null;
+            try {
+                const response = await fetch(API_LOGIN_POSTGRES, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email.trim().toLowerCase(),
+                        password: password,
+                    }),
+                });
+
+                const rawText = await response.text();
+                if (response.ok) {
+                    const pgJson = JSON.parse(rawText);
+                    pgUserData = pgJson.user;
+                    console.log("2. Giải mã PII từ PostgreSQL thành công!", pgUserData);
+                } else {
+                    console.warn("PostgreSQL cảnh báo:", rawText);
+                }
+            } catch (pgErr) {
+                console.warn("Không thể kết nối PostgreSQL Backend:", pgErr.message);
+            }
 
             setLoading(false);
-            console.log("Đăng nhập thành công!");
-            navigation.navigate("Home");
+
+            // =========================================================
+            // 3. CHUYỂN SANG HOMESCREEN (KÈM DỮ LIỆU FIRESTORE & POSTGRES)
+            // =========================================================
+            navigation.navigate("Home", {
+                user: {
+                    uid: uid,
+                    email: email.trim(),
+                    firestoreInfo: firestoreData,
+                    pgInfo: pgUserData
+                }
+            });
+
         } catch (error) {
             setLoading(false);
 
-            // Xử lý các mã lỗi phổ biến
+            // Xử lý các mã lỗi của Firebase Auth
             if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                 Alert.alert("Thất bại", "Email hoặc mật khẩu không chính xác.");
             } else if (error.code === 'auth/invalid-email') {
                 Alert.alert("Lỗi", "Định dạng email không hợp lệ.");
             } else {
-                Alert.alert("Lỗi", "Có lỗi xảy ra: " + error.message);
+                Alert.alert("Lỗi Đăng Nhập", error.message);
             }
         }
     };
